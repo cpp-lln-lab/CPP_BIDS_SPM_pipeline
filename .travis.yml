@@ -92,6 +92,7 @@ jobs:
         - remark ./demos/ --frail
         - remark ./docs/ --frail
         - remark ./tests/ --frail
+        - remark ./notebooks/ --frail
 
       #-------------------------------------------------------------------------
       # third job
