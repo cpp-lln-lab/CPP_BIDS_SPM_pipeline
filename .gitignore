@@ -8,6 +8,8 @@
 *.html
 *.zip
 *.ps
+*checkpoint.ipynb
+
 
 options_task-*.json
 onsets*_events.mat
@@ -23,6 +25,9 @@ tests/group/*
 
 # ignore content of the build folder of the doc
 docs/build/*
+
+# ignore output data in notebook folder
+notebooks/output/*
 
 # ignore virtual env
 cpp_bids_spm/*
