@@ -32,7 +32,7 @@ function imgNb = copyGraphWindownOutput(opt, subID, action, imgNb)
     action = '';
   end
 
-  if ~spm('CmdLine') % && ~isOctave
+  if ~spm('CmdLine') && ~isOctave
 
     figureDir = fullfile(opt.derivativesDir, ['sub-' subID], 'figures');
     if ~exist(figureDir, 'dir')
@@ -55,6 +55,14 @@ function imgNb = copyGraphWindownOutput(opt, subID, action, imgNb)
       imgNb = imgNb + 1;
 
     end
+
+  else
+
+    msg = [
+      'SPM were likely not created. Possible reasons:\n', ...
+      ' - running SPM from the matlab command line only,\n' ...
+      ' - running under octave.'];
+    warning(sprintf(msg));
 
   end
 
