@@ -6,7 +6,7 @@ function [interactiveWindow, graphWindow, cmdLine] = setGraphicWindow()
   graphWindow = [];
   cmdLine = true;
 
-  if ~spm('CmdLine') %&& ~isOctave
+  if ~spm('CmdLine') % && ~isOctave
 
     try
       [interactiveWindow, graphWindow, cmdLine] = spm('FnUIsetup');

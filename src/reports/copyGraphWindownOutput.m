@@ -32,7 +32,7 @@ function imgNb = copyGraphWindownOutput(opt, subID, action, imgNb)
     action = '';
   end
 
-  if ~spm('CmdLine') %&& ~isOctave
+  if ~spm('CmdLine') % && ~isOctave
 
     figureDir = fullfile(opt.derivativesDir, ['sub-' subID], 'figures');
     if ~exist(figureDir, 'dir')
