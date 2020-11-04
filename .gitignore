@@ -9,6 +9,7 @@
 *.zip
 *.ps
 *checkpoint.ipynb
+octave-workspace
 
 
 options_task-*.json
