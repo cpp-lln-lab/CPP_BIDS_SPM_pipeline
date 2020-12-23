@@ -81,6 +81,14 @@ function imgNb = copyGraphWindownOutput(opt, subID, action, imgNb)
 
     end
 
+  else
+
+    msg = [
+           'SPM were likely not created. Possible reasons:\n', ...
+           ' - running SPM from the matlab command line only,\n' ...
+           ' - running under octave.'];
+    warning(sprintf(msg));
+
   end
 
   imgNb = imgNb(end) + 1;
