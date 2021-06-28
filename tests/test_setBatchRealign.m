@@ -19,7 +19,7 @@ function test_setBatchRealignBasic()
   subLabel = '01';
 
   opt = setOptions('MoAE', subLabel);
-  [BIDS, opt] = getData(opt);
+  [BIDS, opt] = getData(opt, opt.dir.raw);
 
   matlabbatch = [];
   matlabbatch = setBatchRealign(matlabbatch, BIDS, opt, subLabel);
@@ -29,10 +29,10 @@ function test_setBatchRealignBasic()
 
   runCounter = 1;
   for iSes = 1
-    fileName = spm_BIDS(BIDS, 'data', ...
-                        'sub', subLabel, ...
-                        'task', opt.taskName, ...
-                        'type', 'bold');
+    fileName = bids.query(BIDS, 'data', ...
+                          'sub', subLabel, ...
+                          'task', opt.taskName, ...
+                          'suffix', 'bold');
 
     expectedBatch{end}.spm.spatial.realignunwarp.data(1, iSes).pmscan = { '' };
     expectedBatch{end}.spm.spatial.realignunwarp.data(1, iSes).scans = cellstr(fileName);

@@ -23,8 +23,11 @@ opt = moae_get_option();
 download_moae_ds(downloadData);
 
 %% Run batches
-reportBIDS(opt);
-bidsCopyRawFolder(opt, 1);
+% reportBIDS(opt);
+
+opt.pipeline.type = 'preproc';
+
+bidsCopyInputFolder(opt);
 
 % In case you just want to run segmentation and skull stripping
 % NOTE: skull stripping is also included in 'bidsSpatialPrepro'
@@ -34,10 +37,9 @@ bidsSTC(opt);
 
 bidsSpatialPrepro(opt);
 
-% The following do not run on octave for now (because of spmup)
-% anatomicalQA(opt);
-% bidsResliceTpmToFunc(opt);
-% functionalQA(opt);
+anatomicalQA(opt);
+bidsResliceTpmToFunc(opt);
+functionalQA(opt);
 
 % create a whole brain functional mean image mask
 % so the mask will be in the same resolution/space as the functional images
@@ -48,6 +50,9 @@ mask = bidsWholeBrainFuncMask(opt);
 
 % smoooth the funcitional images
 bidsSmoothing(FWHM, opt);
+
+% The following crash on CI
+opt.pipeline.type = 'stats';
 
 % The following crash on Travis CI
 bidsFFX('specifyAndEstimate', opt, FWHM);

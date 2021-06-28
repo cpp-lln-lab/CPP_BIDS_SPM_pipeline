@@ -27,11 +27,11 @@ function bidsCreateVDM(opt)
     subLabel = opt.subjects{iSub};
 
     % TODO Move to getInfo
-    types = bids.query(BIDS, 'types', 'sub', subLabel);
+    types = bids.query(BIDS, 'suffixes', 'sub', subLabel);
 
     if any(ismember(types, {'phase12', 'phasediff', 'fieldmap', 'epi'}))
 
-      printProcessingSubject(iSub, subLabel);
+      printProcessingSubject(iSub, subLabel, opt);
 
       % Create rough mean of the 1rst run to improve SNR for coregistration
       % TODO use the slice timed EPI if STC was used ?

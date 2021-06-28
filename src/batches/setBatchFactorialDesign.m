@@ -19,7 +19,7 @@ function matlabbatch = setBatchFactorialDesign(matlabbatch, opt, funcFWHM, conFW
   %
   % (C) Copyright 2019 CPP_SPM developers
 
-  printBatchName('specify group level fmri model');
+  printBatchName('specify group level fmri model', opt);
 
   % Check which level of CON smoothing is desired
   smoothPrefix = '';
@@ -27,7 +27,7 @@ function matlabbatch = setBatchFactorialDesign(matlabbatch, opt, funcFWHM, conFW
     smoothPrefix = ['s', num2str(conFWHM)];
   end
 
-  [~, opt] = getData(opt);
+  [~, opt] = getData(opt, opt.dir.preproc);
 
   rfxDir = getRFXdir(opt, funcFWHM, conFWHM);
 
@@ -41,17 +41,19 @@ function matlabbatch = setBatchFactorialDesign(matlabbatch, opt, funcFWHM, conFW
     % at the subject level
     conName = rmTrialTypeStr(grpLvlCon{j});
 
-    fprintf(1, '\n\n  Group contrast: %s\n\n', conName);
+    msg = sprintf('\n\n  Group contrast: %s\n\n', conName);
+    printToScreen(msg, opt);
 
     directory = fullfile(rfxDir, conName);
 
     % If it exists, issue a warning that it has been overwritten
     if exist(directory, 'dir')
-      warning('overwriting directory: %s \n', directory);
+      msg = sprintf('overwriting directory: %s \n', directory);
+      errorHandling(mfilename(), 'wrongSpmVersion', msg, true, opt.verbosity);
       rmdir(directory, 's');
     end
 
-    mkdir(directory);
+    spm_mkdir(directory);
 
     icell(1).levels = 1; %#ok<*AGROW>
 
@@ -59,7 +61,7 @@ function matlabbatch = setBatchFactorialDesign(matlabbatch, opt, funcFWHM, conFW
 
       subLabel = opt.subjects{iSub};
 
-      printProcessingSubject(iSub, subLabel);
+      printProcessingSubject(iSub, subLabel, opt);
 
       % FFX directory and load SPM.mat of that subject
       ffxDir = getFFXdir(subLabel, funcFWHM, opt);
@@ -73,7 +75,8 @@ function matlabbatch = setBatchFactorialDesign(matlabbatch, opt, funcFWHM, conFW
 
       icell(1).scans(iSub, :) = {file};
 
-      fprintf(1, ' %s\n\n', file);
+      msg = sprintf(' %s\n\n', file);
+      printToScreen(msg, opt);
 
     end
 

@@ -17,12 +17,19 @@ function test_createAndReturnOnsetFileBasic()
 
   opt = setOptions('vislocalizer', subLabel);
 
-  [BIDS, opt] = getData(opt);
+  [BIDS, opt] = getData(opt, opt.dir.preproc);
 
   sessions = getInfo(BIDS, subLabel, opt, 'sessions');
   runs = getInfo(BIDS, subLabel, opt, 'runs', sessions{iSes});
 
-  tsvFile = getInfo(BIDS, subLabel, opt, 'filename', sessions{iSes}, runs{iRun}, 'events');
+  query = struct( ...
+                 'sub',  subLabel, ...
+                 'task', opt.taskName, ...
+                 'ses', sessions{iSes}, ...
+                 'run', runs{iRun}, ...
+                 'suffix', 'events', ...
+                 'extension', '.tsv');
+  tsvFile = bids.query(BIDS, 'data', query);
 
   onsetFileName = createAndReturnOnsetFile(opt, subLabel, tsvFile, funcFWHM);
 

@@ -19,7 +19,7 @@ function varargout = getInfo(BIDS, subLabel, opt, info, varargin)
   % If info = ``filename``, this returns the name of the file for a specified
   % session and run::
   %
-  %   filenames = getInfo(BIDS, subLabel, opt, 'filename', sessionID, runID, type)
+  %   filenames = getInfo(BIDS, subLabel, opt, 'filename', sessionID, runID, suffix)
   %
   %
   % :param BIDS:            returned by bids.layout when exploring a BIDS data set.
@@ -60,7 +60,7 @@ function varargout = getInfo(BIDS, subLabel, opt, info, varargin)
       else
         query = struct('sub',  subLabel);
       end
-      % upate query with pre-specified options
+      % update query with pre-specified options
       % overwrite is set to true in this case because we might want to run
       % analysis only on certain sessions
       overwrite = true;
@@ -84,9 +84,11 @@ function varargout = getInfo(BIDS, subLabel, opt, info, varargin)
                      'sub',  subLabel, ...
                      'task', opt.taskName, ...
                      'ses', session, ...
-                     'type', 'bold');
+                     'suffix', 'bold');
 
+      % use the extra query options specified in the options
       query = setFields(query, opt.query);
+      query = removeEmptyQueryFields(query);
 
       runs = bids.query(BIDS, 'runs', query);
 
@@ -99,27 +101,49 @@ function varargout = getInfo(BIDS, subLabel, opt, info, varargin)
 
       varargout = {runs, nbRuns};
 
-    case 'filename'
+    case {'filename', 'metadata'}
 
-      [session, run, type] = deal(varargin{:});
+      [session, run, suffix] = deal(varargin{:});
 
       query = struct( ...
                      'sub',  subLabel, ...
                      'task', opt.taskName, ...
                      'ses', session, ...
                      'run', run, ...
-                     'type', type);
+                     'suffix', suffix, ...
+                     'extension', '.nii');
 
       % use the extra query options specified in the options
       query = setFields(query, opt.query);
+      query = removeEmptyQueryFields(query);
 
-      filenames = bids.query(BIDS, 'data', query);
+      if strcmpi(info, 'filename')
+        filenames = bids.query(BIDS, 'data', query);
 
-      varargout = {char(filenames)};
+        varargout = {char(filenames)};
+
+      elseif strcmpi(info, 'metadata')
+        metadata = bids.query(BIDS, 'metadata', query);
+        varargout = {metadata};
+      end
 
     otherwise
-      error('Not sure what info you want me to get.');
+      errorHandling(mfilename(), 'unknownRequest', ...
+                    'Not sure what info you want me to get.', ...
+                    false, true);
 
+  end
+
+end
+
+function query = removeEmptyQueryFields(query)
+
+  names = {'ses', 'run'};
+
+  for i = 1:numel(names)
+    if isfield(query, names{i}) && isempty(query.(names{i}))
+      query = rmfield(query, names{i});
+    end
   end
 
 end

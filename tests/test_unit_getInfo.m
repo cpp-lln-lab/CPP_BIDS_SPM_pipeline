@@ -1,6 +1,6 @@
 % (C) Copyright 2020 CPP_SPM developers
 
-function test_suite = test_getInfo %#ok<*STOUT>
+function test_suite = test_unit_getInfo %#ok<*STOUT>
   try % assignment of 'localfunctions' is necessary in Matlab >= 2016
     test_functions = localfunctions(); %#ok<*NASGU>
   catch % no problem; early Matlab versions can use initTestSuite fine
@@ -16,9 +16,7 @@ function test_getInfoBasic()
 
   info = 'sessions';
 
-  opt = checkOptions(opt);
-
-  [BIDS, opt] = getData(opt);
+  [BIDS, opt] = getData(opt, opt.dir.preproc);
 
   sessions = getInfo(BIDS, subLabel, opt, info);
   assert(all(strcmp(sessions, {'01' '02'})));
@@ -27,7 +25,7 @@ function test_getInfoBasic()
   session =  '01';
   info = 'runs';
 
-  [BIDS, opt] = getData(opt);
+  [BIDS, opt] = getData(opt, opt.dir.preproc);
 
   runs = getInfo(BIDS, subLabel, opt, info, session);
   assert(all(strcmp(runs, {'1' '2'})));
@@ -38,7 +36,7 @@ function test_getInfoBasic()
   session =  '01';
   info = 'runs';
 
-  [BIDS, opt] = getData(opt);
+  [BIDS, opt] = getData(opt, opt.dir.preproc);
 
   runs = getInfo(BIDS, subLabel, opt, info, session);
   assert(strcmp(runs, {''}));
@@ -55,7 +53,7 @@ function test_getInfoQuery()
 
   opt = setOptions('vismotion', subLabel);
 
-  [BIDS, opt] = getData(opt);
+  [BIDS, opt] = getData(opt, opt.dir.preproc);
 
   filename = getInfo(BIDS, subLabel, opt, info, session, run, 'bold');
   assertEqual(size(filename, 1), 3);
@@ -99,7 +97,7 @@ function test_getInfoQueryWithSessionRestriction()
 
   opt = setOptions('vismotion', subLabel);
 
-  [BIDS, opt] = getData(opt);
+  [BIDS, opt] = getData(opt, opt.dir.preproc);
 
   opt.query = struct('ses', {{'01', '02'}});
   [~, nbSessions] = getInfo(BIDS, subLabel, opt, 'sessions');
@@ -109,5 +107,21 @@ function test_getInfoQueryWithSessionRestriction()
   [sessions, nbSessions] = getInfo(BIDS, subLabel, opt, 'sessions');
   assertEqual(nbSessions, numel(opt.query));
   assertEqual(sessions{1}, opt.query.ses);
+
+end
+
+function test_getInfoError
+
+  subLabel = 'ctrl01';
+
+  opt = setOptions('vismotion', subLabel);
+
+  [BIDS, opt] = getData(opt, opt.dir.preproc);
+
+  opt.query = struct('ses', {{'01', '02'}});
+
+  assertExceptionThrown( ...
+                        @()getInfo(BIDS, subLabel, opt, 'nothing'), ...
+                        'getInfo:unknownRequest');
 
 end

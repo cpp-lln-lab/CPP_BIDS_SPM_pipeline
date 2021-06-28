@@ -17,11 +17,11 @@ function bidsSegmentSkullStrip(opt)
   opt.orderBatches.selectAnat = 1;
   opt.orderBatches.segment = 2;
 
-  parfor iSub = 1:numel(opt.subjects)
+  for iSub = 1:numel(opt.subjects)
 
     subLabel = opt.subjects{iSub};
 
-    printProcessingSubject(iSub, subLabel);
+    printProcessingSubject(iSub, subLabel, opt);
 
     matlabbatch = [];
     matlabbatch = setBatchSelectAnat(matlabbatch, BIDS, opt, subLabel);
@@ -32,6 +32,10 @@ function bidsSegmentSkullStrip(opt)
     matlabbatch = setBatchSkullStripping(matlabbatch, BIDS, opt, subLabel);
 
     saveAndRunWorkflow(matlabbatch, 'segment_skullstrip', opt, subLabel);
+
+    if ~opt.dryRun
+      renameSegmentParameter(BIDS, subLabel, opt);
+    end
 
   end
 

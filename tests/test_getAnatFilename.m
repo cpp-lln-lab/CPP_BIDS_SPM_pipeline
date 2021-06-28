@@ -20,9 +20,9 @@ function test_getAnatFilenameBasic()
 
   opt = setOptions('vislocalizer', subLabel);
 
-  [BIDS, opt] = getData(opt);
+  [BIDS, opt] = getData(opt, opt.dir.preproc);
 
-  [anatImage, anatDataDir] = getAnatFilename(BIDS, subLabel, opt);
+  [anatImage, anatDataDir] = getAnatFilename(BIDS, opt, subLabel);
 
   expectedFileName = 'sub-01_ses-01_T1w.nii';
 
@@ -37,7 +37,7 @@ function test_getAnatFilenameBasic()
   opt.anatReference.session = '01';
   opt.anatReference.type = 'T1w';
 
-  [anatImage, anatDataDir] = getAnatFilename(BIDS, subLabel, opt);
+  [anatImage, anatDataDir] = getAnatFilename(BIDS, opt, subLabel);
 
   assertEqual(anatDataDir, expectedAnatDataDir);
   assertEqual(anatImage, expectedFileName);
@@ -52,12 +52,10 @@ function test_getAnatFilenameTypeError()
 
   opt.anatReference.type = 'T2w';
 
-  opt = checkOptions(opt);
-
-  [BIDS, opt] = getData(opt);
+  [BIDS, opt] = getData(opt, opt.dir.preproc);
 
   assertExceptionThrown( ...
-                        @()getAnatFilename(BIDS, subLabel, opt), ...
+                        @()getAnatFilename(BIDS, opt, subLabel), ...
                         'getAnatFilename:requestedSuffixUnvailable');
 
 end
@@ -70,12 +68,10 @@ function test_getAnatFilenameSEssionError()
 
   opt.anatReference.session = '001';
 
-  opt = checkOptions(opt);
-
-  [BIDS, opt] = getData(opt);
+  [BIDS, opt] = getData(opt, opt.dir.preproc);
 
   assertExceptionThrown( ...
-                        @()getAnatFilename(BIDS, subLabel, opt), ...
+                        @()getAnatFilename(BIDS, opt, subLabel), ...
                         'getAnatFilename:requestedSessionUnvailable');
 
 end

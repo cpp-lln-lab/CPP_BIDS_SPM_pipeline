@@ -15,6 +15,7 @@ function test_setBatchSegmentationPipeline()
   % necessarry to deal with SPM module dependencies
   spm_jobman('initcfg');
 
+  opt = setOptions('dummy');
   opt.orderBatches.selectAnat = 1;
 
   matlabbatch = [];
@@ -38,7 +39,7 @@ function test_setBatchSegmentationImages()
 
   spmLocation = spm('dir');
 
-  opt = struct();
+  opt = setOptions('dummy');
 
   anatImage = returnLocalAnatFilename();
 
@@ -64,15 +65,11 @@ function anatImage = returnLocalAnatFilename()
 
   subLabel = '01';
 
-  opt.taskName = 'vislocalizer';
-  opt.derivativesDir = fullfile(fileparts(mfilename('fullpath')), 'dummyData');
-  opt.subjects = {subLabel};
+  opt = setOptions('vislocalizer', subLabel);
 
-  opt = checkOptions(opt);
+  [BIDS, opt] = getData(opt, opt.dir.preproc);
 
-  [BIDS, opt] = getData(opt);
-
-  [anatImage, anatDataDir] = getAnatFilename(BIDS, subLabel, opt);
+  [anatImage, anatDataDir] = getAnatFilename(BIDS, opt, subLabel);
 
   anatImage = fullfile(anatDataDir, anatImage);
 

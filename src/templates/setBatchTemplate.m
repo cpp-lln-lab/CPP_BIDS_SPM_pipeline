@@ -1,4 +1,5 @@
 function matlabbatch = setBatchTemplate(matlabbatch, BIDS, opt, subID)
+
   %
   % template to creae new setBatch functions
   %

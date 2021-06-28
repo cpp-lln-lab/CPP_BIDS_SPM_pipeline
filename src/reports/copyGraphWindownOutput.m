@@ -31,7 +31,7 @@ function imgNb = copyGraphWindownOutput(opt, subID, action, imgNb)
     action = '';
   end
 
-  figureDir = fullfile(opt.derivativesDir, strcat('sub-', subID), 'figures');
+  figureDir = fullfile(opt.dir.preproc, strcat('sub-', subID), 'figures');
   if ~exist(figureDir, 'dir')
     mkdir(figureDir);
   end
@@ -46,19 +46,18 @@ function imgNb = copyGraphWindownOutput(opt, subID, action, imgNb)
 
     if isempty(file)
 
-      warning( ...
-              'copyGraphWindownOutput:noFile', ...
-              'No figure file to copy');
+      errorHandling(mfilename(), 'noFile', 'No figure file to copy', true, opt.verbosity);
 
     elseif size(file, 1) > 1
 
-      warning( ...
-              'copyGraphWindownOutput:tooManyFiles', ...
-              sprintf('\n %s\n %s\n %s', ...
-                      'Too many figure files to copy.', ...
-                      'Not sure what to do.', ...
-                      'Will skip this step.'));
-      disp(file);
+      msg = sprintf('\n %s\n %s\n %s', ...
+                    'Too many figure files to copy.', ...
+                    'Not sure what to do.', ...
+                    'Will skip this step.');
+      errorHandling(mfilename(), 'tooManyFiles', msg, true, opt.verbosity);
+
+      msg = sprintf('%s\n', strjoin(cellstr(file), '\n'));
+      printToScreen(msg, opt);
 
     else
 
@@ -74,9 +73,10 @@ function imgNb = copyGraphWindownOutput(opt, subID, action, imgNb)
                file, ...
                fullfile(figureDir, targetFile));
 
-      fprintf(1, '\n%s\nwas moved to\n%s\n', ...
-              file, ...
-              fullfile(figureDir, targetFile));
+      msg = sprintf('\n%s\nwas moved to\n%s\n', ...
+                    file, ...
+                    fullfile(figureDir, targetFile));
+      printToScreen(msg, opt);
 
     end
 

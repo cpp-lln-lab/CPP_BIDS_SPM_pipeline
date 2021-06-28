@@ -24,7 +24,7 @@ function saveMatlabBatch(matlabbatch, batchType, opt, subID)
     subID = ['sub-' subID];
   end
 
-  jobsDir = fullfile(opt.jobsDir, subID);
+  jobsDir = fullfile(opt.dir.jobs, subID);
   [~, ~, ~] = mkdir(jobsDir);
 
   filename = sprintf( ...
@@ -32,7 +32,7 @@ function saveMatlabBatch(matlabbatch, batchType, opt, subID)
                      datestr(now, 'yyyymmdd_HHMM'), ...
                      batchType);
 
-  [OS, GeneratedBy] = getEnvInfo();
+  [OS, GeneratedBy] = getEnvInfo(opt);
   GeneratedBy(1).Description = batchType;
 
   save(fullfile(jobsDir, filename), 'matlabbatch', '-v7');

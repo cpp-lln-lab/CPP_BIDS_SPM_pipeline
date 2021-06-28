@@ -47,14 +47,16 @@ function opt = getSubjectList(BIDS, opt)
 
   % if any group is mentioned
   if ~isempty(opt.groups{1}) && ...
-          any(strcmpi({'group'}, fieldnames(BIDS.participants)))
+          any(strcmpi({'group'}, fieldnames(BIDS.participants.content)))
 
-    fields = fieldnames(BIDS.participants);
+    participantsContent = BIDS.participants.content;
+
+    fields = fieldnames(participantsContent);
     fieldIdx = strcmpi({'group'}, fields);
 
-    subjectIdx = strcmp(BIDS.participants.(fields{fieldIdx}), opt.groups);
+    subjectIdx = strcmp(participantsContent.(fields{fieldIdx}), opt.groups);
 
-    subjects = char(BIDS.participants.participant_id);
+    subjects = char(participantsContent.participant_id);
     subjects = cellstr(subjects(subjectIdx, 5:end));
 
     tmp = cat(1, tmp, subjects);
@@ -75,14 +77,17 @@ function opt = getSubjectList(BIDS, opt)
 
   % check that all the subjects asked for exist
   if any(~ismember(opt.subjects, allSubjects))
-    fprintf('subjects specified\n');
-    disp(opt.subjects);
-    fprintf('subjects present\n');
-    disp(allSubjects);
+    opt.verbosity = 1;
+    printToScreen('subjects specified: ', opt);
+    printToScreen(strjoin(opt.subjects), opt);
+    printToScreen('\n', opt);
 
-    errorStruct.identifier = 'getSubjectList:noMatchingSubject';
-    errorStruct.message = 'Some of the subjects specified do not exist in this data set.';
-    error(errorStruct);
+    printToScreen('\nsubjects present:', opt);
+    printToScreen(strjoin(allSubjects), opt);
+    printToScreen('\n', opt);
+
+    msg = 'Some of the subjects specified do not exist in this data set.';
+    errorHandling(mfilename(), 'noMatchingSubject', msg, false, opt.verbosity);
   end
 
 end

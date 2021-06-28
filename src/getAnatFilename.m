@@ -1,4 +1,4 @@
-function [anatImage, anatDataDir] = getAnatFilename(BIDS, subLabel, opt)
+function [anatImage, anatDataDir] = getAnatFilename(BIDS, opt, subLabel)
   %
   % Get the filename and the directory of an anat file for a given session and run.
   % Unzips the file if necessary.
@@ -31,18 +31,16 @@ function [anatImage, anatDataDir] = getAnatFilename(BIDS, subLabel, opt)
   anat = bids.query(BIDS, 'data', ...
                     'sub', subLabel, ...
                     'ses', anatSession, ...
-                    'type', anatSuffix);
+                    'suffix', anatSuffix);
 
   if isempty(anat)
-
-    msgID = 'noAnatFile';
 
     msg = sprintf('No anat file for the subject: %s / session: %s/ type: %s.', ...
                   subLabel, ...
                   anatSession, ...
                   anatSuffix);
 
-    getAnatError(msgID, msg);
+    errorHandling(mfilename(), 'noAnatFile', msg, false, false);
 
   end
 
@@ -58,18 +56,17 @@ end
 
 function checkAvailableSuffix(BIDS, subLabel, anatType)
 
-  availableSuffixes = bids.query(BIDS, 'types', ...
+  availableSuffixes = bids.query(BIDS, 'suffixes', ...
                                  'sub', subLabel);
 
   if ~strcmp(anatType, availableSuffixes)
 
     disp(availableSuffixes);
 
-    msgID = 'requestedSuffixUnvailable';
     msg = sprintf(['Requested anatomical suffix %s unavailable for subject %s.'...
                    ' All available types listed above.'], anatType);
 
-    getAnatError(msgID, msg);
+    errorHandling(mfilename(), 'requestedSuffixUnvailable', msg, false, false);
 
   end
 
@@ -85,13 +82,12 @@ function anatSession = checkAvailableSessions(BIDS, subLabel, opt, anatSession)
 
       disp(sessions);
 
-      msgID = 'requestedSessionUnvailable';
       msg = sprintf(['Requested session %s for anatomical unavailable for subject %s.', ...
                      ' All available sessions listed above.'], ...
                     anatSession, ...
                     subLabel);
 
-      getAnatError(msgID, msg);
+      errorHandling(mfilename(), 'requestedSessionUnvailable', msg, false, false);
 
     end
 
@@ -99,13 +95,5 @@ function anatSession = checkAvailableSessions(BIDS, subLabel, opt, anatSession)
     anatSession = sessions;
 
   end
-
-end
-
-function getAnatError(msgID, msg)
-
-  errorStruct.identifier = sprintf('getAnatFilename:%s', msgID);
-  errorStruct.message = msg;
-  error(errorStruct);
 
 end

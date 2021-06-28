@@ -19,7 +19,7 @@ function opt = checkOptions(opt)
   % REQUIRED FIELDS:
   %
   %   - ``opt.taskName``
-  %   - ``opt.dataDir``
+  %   - ``opt.dir.raw``
   %
   % IMPORTANT OPTIONS (with their defaults):
   %
@@ -71,8 +71,6 @@ function opt = checkOptions(opt)
   fieldsToSet = setDefaultOption();
   opt = setFields(opt, fieldsToSet);
 
-  opt = setFields(opt, fieldsToSet);
-
   %  Options for toolboxes
   global ALI_TOOLBOX_PRESENT
 
@@ -81,31 +79,49 @@ function opt = checkOptions(opt)
     opt = setFields(opt, ALI_my_defaults());
   end
 
+  opt = setFields(opt, rsHRF_my_defaults());
+
   checkFields(opt);
 
-  if ~isempty(opt.dataDir)
-    opt.dataDir = spm_file(opt.dataDir, 'cpath');
+  if strcmp(opt.pipeline.type, 'stats') && ...
+          any(strcmp(opt.pipeline.name, {'cpp_spm', 'cpp_spm-preproc'}))
+    opt.pipeline.name = 'cpp_spm-stats';
+  end
+
+  if ~iscell(opt.query.modality)
+    tmp = opt.query.modality;
+    opt.query = rmfield(opt.query, 'modality');
+    opt.query.modality{1} = tmp;
   end
 
   opt = orderfields(opt);
 
-  opt = setStatsDir(opt);
+  opt = setDirectories(opt);
 
 end
 
 function fieldsToSet = setDefaultOption()
+
   % this defines the missing fields
 
-  fieldsToSet.dataDir = '';
-  fieldsToSet.derivativesDir = '';
-  fieldsToSet.dir = struct('raw', '', ...
-                           'derivatives', '');
+  fieldsToSet.verbosity = 1;
+  fieldsToSet.dryRun = false;
+
+  fieldsToSet.pipeline.type = 'preproc';
+  fieldsToSet.pipeline.name = 'cpp_spm';
+
+  fieldsToSet.dir = struct('input', '', ...
+                           'output', '', ...
+                           'derivatives', '', ...
+                           'raw', '', ...
+                           'preproc', '', ...
+                           'stats', '');
 
   fieldsToSet.groups = {''};
   fieldsToSet.subjects = {[]};
   fieldsToSet.zeropad = 2;
 
-  fieldsToSet.query = struct([]);
+  fieldsToSet.query.modality = {'anat', 'func'};
 
   fieldsToSet.anatReference.type = 'T1w';
   fieldsToSet.anatReference.session = '';

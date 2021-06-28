@@ -4,7 +4,7 @@
 
 # defines where the BIDS data set will be created
 StartDir=`pwd` # relative to starting directory
-PrerpoDir=$StartDir/dummyData/derivatives/cpp_spm
+PreprocDir=$StartDir/dummyData/derivatives/cpp_spm
 StatsDir=$StartDir/dummyData/derivatives/cpp_spm-stats
 
 mkdir $StatsDir
@@ -15,17 +15,17 @@ SesList='01 02' # session list
 for Subject in $SubList
 do
 
-		mkdir $PrerpoDir/sub-$Subject
+		mkdir $PreprocDir/sub-$Subject
 		mkdir $StatsDir/sub-$Subject
 
 		for Ses in $SesList
 		do
 
 			# create folder for each session and functional and fmap
-			mkdir $PrerpoDir/sub-$Subject/ses-$Ses
+			mkdir $PreprocDir/sub-$Subject/ses-$Ses
 
 			# FUNC
-			ThisDir=$PrerpoDir/sub-$Subject/ses-$Ses/func
+			ThisDir=$PreprocDir/sub-$Subject/ses-$Ses/func
 			mkdir $ThisDir
 
 			touch $ThisDir/sub-$Subject\_ses-$Ses\_task-vismotion_run-1_bold.nii
@@ -62,7 +62,7 @@ do
 			echo "6\t2\tVisMotUp" >> $ThisDir/sub-$Subject\_ses-$Ses\_task-vismotion_run-2_events.tsv
 
 			# FMAP
-			ThisDir=$PrerpoDir/sub-$Subject/ses-$Ses/fmap
+			ThisDir=$PreprocDir/sub-$Subject/ses-$Ses/fmap
 			mkdir $ThisDir
 
 			touch $ThisDir/sub-$Subject\_ses-$Ses\_run-1_phasediff.nii
@@ -76,18 +76,18 @@ do
 			EchoTime2=0.00746
 			template='{"EchoTime1":%f, "EchoTime2":%f, "IntendedFor":"%s"}'
 
-			IntendedFor=`echo func/sub-$Subject\_ses-$Ses\_task-vismotion_run-1_bold.nii`
+			IntendedFor=`echo ses-$Ses/func/sub-$Subject\_ses-$Ses\_task-vismotion_run-1_bold.nii`
 			json_string=$(printf "$template" "$EchoTime1" "$EchoTime2" "$IntendedFor")
 			echo "$json_string" > $ThisDir/sub-$Subject\_ses-$Ses\_run-2_phasediff.json
 
-			IntendedFor=`echo func/sub-$Subject\_ses-$Ses\_task-vislocalizer_bold.nii`
+			IntendedFor=`echo ses-$Ses/func/sub-$Subject\_ses-$Ses\_task-vislocalizer_bold.nii`
 			json_string=$(printf "$template" "$EchoTime1" "$EchoTime2" "$IntendedFor")
 			echo "$json_string" > $ThisDir/sub-$Subject\_ses-$Ses\_run-1_phasediff.json
 
 		done
 
 		# ANAT
-		ThisDir=$PrerpoDir/sub-$Subject/ses-01/anat
+		ThisDir=$PreprocDir/sub-$Subject/ses-01/anat
 		mkdir $ThisDir
 
 		touch $ThisDir/sub-$Subject\_ses-01_T1w.nii
@@ -107,13 +107,13 @@ do
 		touch $ThisDir/mask.nii
 
 		touch $ThisDir/spmT_0001.nii
-		touch $ThisDir/spmT_0002.nii		
+		touch $ThisDir/spmT_0002.nii
 
 		touch $ThisDir/con_0001.nii
 		touch $ThisDir/con_0002.nii
 		touch $ThisDir/con_0003.nii
 		touch $ThisDir/con_0004.nii
-				
+
 		touch $ThisDir/s6con_0001.nii
 		touch $ThisDir/s6con_0002.nii
 		touch $ThisDir/s6con_0003.nii
